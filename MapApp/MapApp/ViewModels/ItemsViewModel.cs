@@ -4,7 +4,9 @@ using MapApp.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MapApp.ViewModels
@@ -12,20 +14,38 @@ namespace MapApp.ViewModels
     public class ItemsViewModel : BaseViewModel
     {
         private Item _selectedItem;
+        private string _searchQuery;
+        private ObservableCollection<Item> _filteredItems;
 
         public ObservableCollection<Item> Items { get; }
+        public ObservableCollection<Item> FilteredItems
+        {
+            get => _filteredItems;
+            set => SetProperty(ref _filteredItems, value);
+        }
+
         public Command LoadItemsCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
+
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                SetProperty(ref _searchQuery, value);
+                FilterItems();
+            }
+        }
 
         public ItemsViewModel()
         {
             Title = "Browse";
             Items = new ObservableCollection<Item>();
+            FilteredItems = new ObservableCollection<Item>();
+
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-
             ItemTapped = new Command<Item>(OnItemSelected);
-
             AddItemCommand = new Command(OnAddItem);
         }
 
@@ -41,6 +61,8 @@ namespace MapApp.ViewModels
                 {
                     Items.Add(item);
                 }
+                FilteredItems = Items;
+                FilterItems(); // Filter items initially
             }
             catch (Exception ex)
             {
@@ -68,19 +90,37 @@ namespace MapApp.ViewModels
             }
         }
 
-        private async void OnAddItem(object obj)
+        private async void OnAddItem()
         {
             await Shell.Current.GoToAsync(nameof(NewItemPage));
         }
 
-        async void OnItemSelected(Item item)
+        private async void OnItemSelected(Item item)
         {
             if (item == null)
                 return;
 
-            // This will push the ItemDetailPage onto the navigation stack
             Data.SelectedToilet = item.Toilet;
             await Shell.Current.GoToAsync($"{nameof(ItemDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+        }
+
+        private void FilterItems()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                FilteredItems = Items;
+            }
+            else
+            {
+                var filtered = Items.Where(item =>
+                    item.Text.ToLower().Contains(SearchQuery.ToLower()) ||
+                    item.Description.ToLower().Contains(SearchQuery.ToLower()));
+                foreach (var item in filtered)
+                {
+                    Console.WriteLine(item.Text);
+                }
+                FilteredItems = new ObservableCollection<Item>(filtered);
+            }
         }
     }
 }

@@ -15,8 +15,13 @@
       https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
     -->
     <RefreshView x:DataType="local:ItemsViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <StackLayout Margin="20">
+            <SearchBar x:Name="searchBar"
+               Placeholder="Search"
+               Text="{Binding SearchQuery, Mode=TwoWay}"
+               SearchCommand="{Binding LoadItemsCommand}" />
         <CollectionView x:Name="ItemsListView"
-                ItemsSource="{Binding Items}"
+                ItemsSource="{Binding FilteredItems}"
                 SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -40,5 +45,6 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        </StackLayout>
     </RefreshView>
 </ContentPage>

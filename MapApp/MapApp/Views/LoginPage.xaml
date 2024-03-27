@@ -8,6 +8,7 @@
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+            <Label Text="Toilet Finder App" FontSize="Title"/>
             <Label x:Name="ProgressLabel" VerticalOptions="Center" Text="Loading Data"/>
             <ProgressBar x:Name="Progressbar" Progress="0" />
             <Button x:Name="LoginButton" VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>

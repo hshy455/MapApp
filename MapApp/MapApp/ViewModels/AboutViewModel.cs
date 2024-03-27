@@ -1,5 +1,6 @@
 ﻿using MapApp.Helpers;
 using MapApp.Models;
+using MapApp.Views;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,10 +14,10 @@ namespace MapApp.ViewModels
         public AboutViewModel()
         {
             Title = "About";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
+            OpenMapCommand = new Command(async () => await Shell.Current.GoToAsync($"//{nameof(MapPage)}"));
         }
 
-        public ICommand OpenWebCommand { get; }
+        public ICommand OpenMapCommand { get; }
 
         
     }
